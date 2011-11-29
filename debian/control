@@ -1,0 +1,15 @@
+Source: python-cloudfiles
+Section: python
+Priority: extra
+Maintainer: Julien Danjou <acid@debian.org>
+Build-Depends: debhelper (>= 8.0.0), python
+Standards-Version: 3.9.2
+Homepage: https://github.com/rackspace/python-cloudfiles
+Vcs-Git: git://git.debian.org/openstack/python-cloudfiles.git
+Vcs-Browser: http://git.debian.org/?p=openstack/python-cloudfiles.git;a=summary
+
+Package: python-cloudfiles
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
+Description: Python language bindings for Cloud Files API
+ Bindings to use the Cloud Files API.

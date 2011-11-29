@@ -1,0 +1,5 @@
+python-cloudfiles (1.7.9.2-1) unstable; urgency=low
+
+  * Initial release (Closes: #650288) 
+
+ -- Julien Danjou <acid@debian.org>  Tue, 29 Nov 2011 10:28:31 +0100
