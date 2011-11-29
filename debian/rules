@@ -2,3 +2,7 @@
 # -*- makefile -*-
 %:
 	dh $@ --with python2
+
+override_dh_clean:
+	dh_clean
+	rm -rf python_cloudfiles.egg-info
