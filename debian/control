@@ -1,8 +1,11 @@
 Source: python-cloudfiles
 Section: python
 Priority: extra
-Maintainer: Julien Danjou <acid@debian.org>
-Build-Depends: debhelper (>= 8.0.0), python
+Maintainer: PKG OpenStack <openstack-devel@lists.alioth.debian.org>
+Uploaders: Julien Danjou <acid@debian.org>,
+           Thomas Goirand <zigo@debian.org>,
+           Ghe Rivero <ghe@debian.org>
+Build-Depends: debhelper (>= 8.0.0), python, python-distutils
 Standards-Version: 3.9.2
 Homepage: https://github.com/rackspace/python-cloudfiles
 Vcs-Git: git://git.debian.org/openstack/python-cloudfiles.git
