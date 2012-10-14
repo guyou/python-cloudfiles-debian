@@ -10,12 +10,12 @@ See COPYING for license information.
 
 import  socket
 import  os
-from    urllib    import quote
+from    urllib    import urlencode
 from    httplib   import HTTPSConnection, HTTPConnection, HTTPException
 from    container import Container, ContainerResults
 from    utils     import unicode_quote, parse_url, THTTPConnection, THTTPSConnection
 from    errors    import ResponseError, NoSuchContainer, ContainerNotEmpty, \
-                         InvalidContainerName, CDNNotEnabled
+                         InvalidContainerName, CDNNotEnabled, ContainerExists
 from    Queue     import Queue, Empty, Full
 from    time      import time
 import  consts
@@ -79,12 +79,10 @@ class Connection(object):
             authurl = kwargs.get('authurl', consts.us_authurl)
             if username and api_key and authurl:
                 self.auth = Authentication(username, api_key, authurl=authurl,
-                            useragent=self.user_agent)
+                            useragent=self.user_agent, timeout=self.timeout)
             else:
                 raise TypeError("Incorrect or invalid arguments supplied")
-
         self._authenticate()
-
     def _authenticate(self):
         """
         Authenticate and setup this instance with the values returned.
@@ -169,10 +167,7 @@ class Connection(object):
                  (self.uri.rstrip('/'), '/'.join([unicode_quote(i) for i in path]))
 
         if isinstance(parms, dict) and parms:
-            query_args = \
-                ['%s=%s' % (quote(x),
-                            quote(str(y))) for (x, y) in parms.items()]
-            path = '%s?%s' % (path, '&'.join(query_args))
+            path = '%s?%s' % (path, urlencode(parms))
 
         headers = {'Content-Length': str(len(data)),
                    'User-Agent': self.user_agent,
@@ -199,17 +194,18 @@ class Connection(object):
 
     def get_info(self):
         """
-        Return tuple for number of containers and total bytes in the account
+        Return tuple for number of containers, total bytes in the account and account metadata
 
         >>> connection.get_info()
         (5, 2309749)
 
         @rtype: tuple
-        @return: a tuple containing the number of containers and total bytes
-                 used by the account
+        @return: a tuple containing the number of containers, total bytes
+                 used by the account and a dictionary containing account metadata
         """
         response = self.make_request('HEAD')
         count = size = None
+        metadata = {}
         for hdr in response.getheaders():
             if hdr[0].lower() == 'x-account-container-count':
                 try:
@@ -221,10 +217,26 @@ class Connection(object):
                     size = int(hdr[1])
                 except ValueError:
                     size = 0
+            if hdr[0].lower().startswith('x-account-meta-'):
+                metadata[hdr[0].lower()[15:]] = hdr[1]
         buff = response.read()
         if (response.status < 200) or (response.status > 299):
             raise ResponseError(response.status, response.reason)
-        return (count, size)
+        return (count, size, metadata)
+
+    def update_account_metadata(self, metadata):
+        """
+        Update account metadata
+        >>> metadata = {'x-account-meta-foo' : 'bar'}
+        >>> connection.update_account_metadata(metadata)
+
+        @param metadata: Dictionary of metadata
+        @type metdada: dict
+        """
+        response = self.make_request('POST', hdrs=metadata)
+        response.read()
+        if (response.status < 200) or (response.status > 299):
+           raise ResponseError(response.status, response.reason)
 
     def _check_container_name(self, container_name):
         if not container_name or \
@@ -232,7 +244,7 @@ class Connection(object):
                 len(container_name) > consts.container_name_limit:
             raise InvalidContainerName(container_name)
 
-    def create_container(self, container_name):
+    def create_container(self, container_name, error_on_existing=False):
         """
         Given a container name, returns a L{Container} item, creating a new
         Container if one does not already exist.
@@ -242,6 +254,9 @@ class Connection(object):
 
         @param container_name: name of the container to create
         @type container_name: str
+        @param error_on_existing: raise ContainerExists if container already
+        exists
+        @type error_on_existing: bool
         @rtype: L{Container}
         @return: an object representing the newly created container
         """
@@ -251,6 +266,8 @@ class Connection(object):
         buff = response.read()
         if (response.status < 200) or (response.status > 299):
             raise ResponseError(response.status, response.reason)
+        if error_on_existing and (response.status == 202):
+            raise ContainerExists(container_name)
         return Container(self, container_name)
 
     def delete_container(self, container_name):
@@ -267,6 +284,7 @@ class Connection(object):
         self._check_container_name(container_name)
 
         response = self.make_request('DELETE', [container_name])
+        response.read()
 
         if (response.status == 409):
             raise ContainerNotEmpty(container_name)
@@ -322,6 +340,7 @@ class Connection(object):
 
         response = self.make_request('HEAD', [container_name])
         count = size = None
+        metadata = {}
         for hdr in response.getheaders():
             if hdr[0].lower() == 'x-container-object-count':
                 try:
@@ -333,12 +352,14 @@ class Connection(object):
                     size = int(hdr[1])
                 except ValueError:
                     size = 0
+            if hdr[0].lower().startswith('x-container-meta-'):
+                metadata[hdr[0].lower()[17:]] = hdr[1]
         buff = response.read()
         if response.status == 404:
             raise NoSuchContainer(container_name)
         if (response.status < 200) or (response.status > 299):
             raise ResponseError(response.status, response.reason)
-        return Container(self, container_name, count, size)
+        return Container(self, container_name, count, size, metadata)
 
     def list_public_containers(self):
         """
@@ -440,10 +461,9 @@ class ConnectionPool(Queue):
     """
 
     def __init__(self, username=None, api_key=None, **kwargs):
-        auth = kwargs.get('auth', None)
-        self.timeout = kwargs.get('timeout', 5)
+        poolsize = kwargs.pop('poolsize', 10)
         self.connargs = {'username': username, 'api_key': api_key}
-        poolsize = kwargs.get('poolsize', 10)
+        self.connargs.update(kwargs)
         Queue.__init__(self, poolsize)
 
     def get(self):
