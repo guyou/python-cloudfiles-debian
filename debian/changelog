@@ -1,3 +1,10 @@
+python-cloudfiles (1.7.11-1) experimental; urgency=low
+
+  * New upstream release.
+  * Added a get-vcs-source and a gbp.conf file.
+
+ -- Thomas Goirand <zigo@debian.org>  Sun, 14 Oct 2012 07:01:11 +0000
+
 python-cloudfiles (1.7.9.2-1) unstable; urgency=low
 
   * Initial release (Closes: #650288) 
