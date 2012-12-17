@@ -13,6 +13,7 @@ Vcs-Browser: http://git.debian.org/?p=openstack/python-cloudfiles.git;a=summary
 
 Package: python-cloudfiles
 Architecture: all
+Pre-Depends: dpkg (>= 1.15.6~)
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
 Description: Python language bindings for Cloud Files API
  Bindings to use the Cloud Files API.
