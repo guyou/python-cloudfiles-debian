@@ -1,13 +1,14 @@
-Format: http://dep.debian.net/deps/dep5
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: python-cloudfiles
-Source: <http://github.com/rackspace/python-cloudfiles>
+Source: http://github.com/rackspace/python-cloudfiles
+
+Files: debian/*
+Copyright: (c) 2011, Julien Danjou <acid@debian.org>
+           (c) 2012, Thomas Goirand <zigo@debian.org>
+License: BSD-3-Clause
 
 Files: *
 Copyright: Copyright (C) 2008 Rackspace US, Inc.
-License: BSD-3-Clause
-
-Files: debian/*
-Copyright: 2011 Julien Danjou <acid@debian.org>
 License: BSD-3-Clause
 
 License: BSD-3-Clause
