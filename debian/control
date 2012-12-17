@@ -17,3 +17,7 @@ Pre-Depends: dpkg (>= 1.15.6~)
 Depends: ${shlibs:Depends}, ${misc:Depends}, ${python:Depends}
 Description: Python language bindings for Cloud Files API
  Bindings to use the Cloud Files API.
+ .
+ Cloud files is a cloud hosting service that provides "unlimited online storage
+ and CDN" for media (examples given include backups, video files, user content)
+ on a utility computing basis
