@@ -1,3 +1,9 @@
+python-cloudfiles (1.7.11-2.gb) experimental; urgency=low
+
+  * Add hubic support
+
+ -- Guilhem Bonnefille <guilhem.bonnefille@gmail.com> Sat, 7 Dec 2012 10:31:02 +0100
+
 python-cloudfiles (1.7.11-2) unstable; urgency=low
 
   * Uploading to unstable.
