@@ -1,0 +1,27 @@
+Description: Fix some minor issues
+Author: Guilhem Bonnefille <guilhem.bonnefille@gmail.com>
+
+---
+The information above should follow the Patch Tagging Guidelines, please
+checkout http://dep.debian.net/deps/dep3/ to learn about the format. Here
+are templates for supplementary fields that you might want to add:
+
+Origin: <vendor|upstream|other>, <url of original patch>
+Bug: <url in upstream bugtracker>
+Bug-Debian: http://bugs.debian.org/<bugnumber>
+Bug-Ubuntu: https://launchpad.net/bugs/<bugnumber>
+Forwarded: <no|not-needed|url proving that it has been forwarded>
+Reviewed-By: <name and email of someone who approved the patch>
+Last-Update: <YYYY-MM-DD>
+
+--- python-cloudfiles-1.7.11.orig/cloudfiles/consts.py
++++ python-cloudfiles-1.7.11/cloudfiles/consts.py
+@@ -1,6 +1,6 @@
+ """ See COPYING for license information. """
+ 
+-__version__ = "1.7.10"
++__version__ = "1.7.11"
+ user_agent = "python-cloudfiles/%s" % __version__
+ us_authurl = 'https://auth.api.rackspacecloud.com/v1.0'
+ uk_authurl = 'https://lon.auth.api.rackspacecloud.com/v1.0'
+ # vim:set ai ts=4 sw=4 tw=0 expandtab:
